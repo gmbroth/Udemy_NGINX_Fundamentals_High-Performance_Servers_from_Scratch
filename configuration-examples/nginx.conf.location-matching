@@ -1,0 +1,56 @@
+events { }
+
+http {
+
+    include mime.types;  # maps file extensions to mime type. For example, .css maps to text/true
+    
+    server {  # virtual server definition
+
+        listen 80;
+	server_name 172.29.19.95;
+
+	root /etc/nginx/sites/demo;  # this must be a full pathname, contrary to instructor's directions
+
+	# Prefix matching. Will also match /greeting as well as /greet/me/now/. IOW, anything starting with /greet
+#	location /greet {  
+#	    return 200 'Hello from NGINX "/greet" location = PREFIX MATCH.';
+#	}
+
+	# Preferential-prefix matching. Same as prefix-matching but has higher precedence than regex matching.
+#	location ^~ /greet {  
+#	    return 200 'Hello from NGINX "/greet" location = PREFIX MATCH.';
+#	}
+
+	# Exact matching. Will only match /greet
+#	location = /exact {  
+#	    return 200 'Hello from NGINX "/greet" location = EXACT MATCH.';
+#	}
+
+	# PCRE (regular expression) matching. The pattern is case sensitive!
+#	location ~ /greet[0-9] {  
+#	    return 200 'Hello from NGINX "/greet" location = REGEX MATCH.';
+#	}
+
+	# PCRE (regular expression) matching; this pattern is case insensitive!
+	location ~* /greet[0-9] {  
+	    return 200 'Hello from NGINX "/greet" location = REGEX MATCH (case-insensitive).';
+	}
+
+	# Display variables on the webpage
+	location /inspect {
+#	    return 200 "host = $host\nuri = $uri\nargs = $args";
+	    return 200 "host = $host\nuri = $uri\nName = $arg_name";  # to make this work, the uri should be host/inspect?name=garry;
+	}
+
+	# Redirection using the return directive
+	location /logo {
+	    # Can also specify a complete uri: protocol,host, etc; the
+	    # relative uri visits the same host the request is coming from. The
+	    # uri appearing in the browser will mutate to /thumb.
+	    return 307 /thumb.png;  
+	}
+
+    }
+
+}
+

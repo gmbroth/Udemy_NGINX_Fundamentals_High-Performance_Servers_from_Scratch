@@ -1,0 +1,47 @@
+user www-data;
+
+worker_processes auto;
+
+events {
+  worker_connections 1024;
+}
+
+http {
+
+  include mime.types;
+
+  gzip on;
+  gzip_comp_level 3;
+  gzip_types text/css; 
+  gzip_types text/javascript;
+
+  server {
+
+    listen 80;
+    server_name 172.22.6.15;
+
+    root /etc/nginx/sites/demo;
+
+    index index.php index.html;
+
+    location / {
+      try_files $uri $uri/ =404;
+    }
+
+    location ~\.php$ {
+      # Pass php requests to the php-fpm service (fastcgi)
+      include fastcgi.conf;
+      fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+    }
+
+    location ~* \.(css|js|jpg|png)$ {  # case-insensitive regex match
+    	access_log off;
+    	add_header my_header "Hello, World";  # huh, this is an arbitrary header 
+    	add_header Cache-Control public;
+	add_header Pragma public;
+	add_header Vary Accept-Encoding;
+	expires 60m;
+    }
+  }
+}
+

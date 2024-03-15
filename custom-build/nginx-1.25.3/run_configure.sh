@@ -17,7 +17,8 @@
   --with-http_image_filter_module=dynamic \
   --with-http_xslt_module=dynamic \
   --with-mail=dynamic \
-  --with-stream=dynamic
+  --with-stream=dynamic \
+  --with-http_v2_module
 
 exit 0
 

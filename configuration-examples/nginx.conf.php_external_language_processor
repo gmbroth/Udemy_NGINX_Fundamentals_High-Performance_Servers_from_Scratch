@@ -1,0 +1,34 @@
+
+user www-data;  # run nginx as the user www-data, same user as php-fpm
+
+events { }
+
+http {
+
+    include mime.types;  # maps file extensions to mime type. For example, .css maps to text/true
+    
+    server {  # virtual server definition
+
+        listen 80;
+	server_name 172.29.19.95;
+
+	root /etc/nginx/sites/demo;  # this must be a full pathname, contrary to the instructor's comments
+
+	index index.php index.html;  # files served when the URI points to a directory, ie, it ends in '/'; the root folder is implicitly prepended
+
+	# The prefix "/" matches anything
+	location / {
+	    try_files $uri $uri/ =404;  # =404 is the nginx default 404 content
+	}
+
+	# The prefix "/" matches anything
+	location ~\.php$ {
+	    # Pass php requess to thephp-fpm service via fastcgi
+	    include fastcgi.conf;
+	    fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+	}
+
+    }
+
+}
+

@@ -1,0 +1,44 @@
+events { }
+
+http {
+
+    include mime.types;  # maps file extensions to mime type. For example, .css maps to text/true
+    
+    server {  # virtual server definition
+
+        listen 80;
+	server_name 172.29.19.95;
+
+	root /etc/nginx/sites/demo;  # this must be a full pathname, contrary to the instructor's comments
+
+	# Rewrites must appear in the server context before any location directives
+
+#	rewrite ^/usr/\w+ /greet;  # the regex here is: anchor + /usr + more than one word character
+
+
+	# The 'last' flag make this the last rewrite rule applied.
+	# Either the rewrite directive below or this directive *must* be commented.
+	rewrite ^/usr/(\w+) /greet/$1 last;  # last --> no further rewrite will be performed
+
+	# Capture part of the client-typed URI as variable $1:
+#	rewrite ^/usr/(\w+) /greet/$1; # the regex here uses a capture group ()
+
+	# The rewrite rule above will change /usr/garry to /greet/garry ...
+	# ... which will be reevaluated by nginx ...
+	# ... then matching this directive ...
+	# ... rewriting to /thumb.png ...
+	# ... displaying the png from the root.
+	rewrite ^/greet/garry /thumb.png;
+
+	location /greet {
+	    return 200 "This is a rewrite";
+	}
+
+	location /greet/garry {
+	    return 200 "This is a rewrite, Garry";
+	}
+
+    }
+
+}
+
